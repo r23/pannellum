@@ -101,6 +101,7 @@ var defaultConfig = {
     backgroundColor: [0, 0, 0],
     animationTimingFunction: timingFunction,
     draggable: true,
+    disableKeyboardCtrl: false,
 };
 
 // Translatable / configurable strings
@@ -177,6 +178,8 @@ uiContainer.appendChild(infoDisplay.container);
 infoDisplay.load = {};
 infoDisplay.load.box = document.createElement('div');
 infoDisplay.load.box.className = 'pnlm-load-box';
+infoDisplay.load.boxp = document.createElement('p');
+infoDisplay.load.box.appendChild(infoDisplay.load.boxp);
 infoDisplay.load.lbox = document.createElement('div');
 infoDisplay.load.lbox.className = 'pnlm-lbox';
 infoDisplay.load.lbox.innerHTML = '<div class="pnlm-loading"></div>';
@@ -428,7 +431,8 @@ function init() {
         }
     }
     
-    uiContainer.classList.add('pnlm-grab');
+    if (config.draggable)
+        uiContainer.classList.add('pnlm-grab');
     uiContainer.classList.remove('pnlm-grabbing');
 }
 
@@ -470,9 +474,11 @@ function onImageLoad() {
         uiContainer.addEventListener('fullscreenchange', onFullScreenChange, false);
         window.addEventListener('resize', onDocumentResize, false);
         window.addEventListener('orientationchange', onDocumentResize, false);
-        uiContainer.addEventListener('keydown', onDocumentKeyPress, false);
-        uiContainer.addEventListener('keyup', onDocumentKeyUp, false);
-        uiContainer.addEventListener('blur', clearKeys, false);
+        if (!config.disableKeyboardCtrl) {
+            container.addEventListener('keydown', onDocumentKeyPress, false);
+            container.addEventListener('keyup', onDocumentKeyUp, false);
+            container.addEventListener('blur', clearKeys, false);
+        }
         document.addEventListener('mouseleave', onDocumentMouseUp, false);
         dragFix.addEventListener('touchstart', onDocumentTouchStart, false);
         dragFix.addEventListener('touchmove', onDocumentTouchMove, false);
@@ -1730,7 +1736,7 @@ function createHotSpots() {
 }
 
 /**
- * Destroys currently create hot spot elements.
+ * Destroys currently created hot spot elements.
  * @private
  */
 function destroyHotSpots() {
@@ -1744,7 +1750,7 @@ function destroyHotSpots() {
                 current = current.parentNode;
             }
             renderContainer.removeChild(current);
-            delete hs.div;
+            delete hs[i].div;
         }
     }
 }
@@ -1917,7 +1923,7 @@ function processOptions(isPreview) {
 
     // Fill in load button label and loading box text
     controls.load.innerHTML = '<p>' + config.strings.loadButtonLabel + '</p>';
-    infoDisplay.load.box.innerHTML = '<p>' + config.strings.loadingLabel + '</p>';
+    infoDisplay.load.boxp.innerHTML = config.strings.loadingLabel;
 
     // Process other options
     for (var key in config) {
