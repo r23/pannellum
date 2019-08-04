@@ -6,5 +6,9 @@ build/**
 
 # Ignore generated docs
 utils/doc/generated_docs
-/.project
-/.settings
+
+# Ignore IntelliJ Files
+.idea
+
+# Ignore logs
+tests/*.log
